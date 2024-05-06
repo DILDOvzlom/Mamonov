@@ -1,0 +1,333 @@
+
+# Contents:
+#
+#  Profile
+#  Core
+#  Commit
+#  Push
+#  Alias
+#    Status
+#    Commit
+#    Checkout
+#    Branch
+#    Reset(undo work/stage/cache)
+#    Diff, difftool
+#    Log
+#    Search
+#      Search git-repo file names
+#      Search in git-repo files
+#        Code
+#        Personal-grep
+#      Search in git-log messages ("--grep")
+#      Search in git-log patches "-S,-G"
+#    Tag
+#    Fetch
+#    Submodules
+#      Info
+#      Management
+#    Files, tree
+#    Help
+#    Mix
+#  Coding
+#  Color
+#  Tools
+#    Diff tools
+#  Git-plus
+#  Git-extras
+#    Alias
+#  Include
+
+# * Profile
+[user]
+	name = DILDOvzlom
+	email = romausnul@ya.ru
+
+[github]
+	user = yuravg
+
+# * Core
+[core]
+	editor = vim
+	excludesfile = ~/.gitignore_global
+	autocrlf = input
+	attributesfile = ~/.gitattributes_global
+
+# * Commit
+[commit]
+	template = ~/.gitmessage
+
+# * Push
+# Push only the current working branch
+[push]
+	default = simple
+
+# * Alias
+# ** Status
+[alias]
+	st = status
+	ss = status -s
+	sb = status -s --branch
+	si = status -s --ignored
+	# Status Full: status project and its submodules
+	sf = "!f() { git ss; STATUS=$(git submodule status $1); if [ -n \"$STATUS\" ]; then echo; git sm-sf; fi }; f"
+	# https://github.com/yuravg/git-scripts/blob/master/bin/git-status-extra
+	se = status-extra -c
+
+# ** Commit
+[alias]
+	c = commit
+	cm = commit -m
+	ci = commit -m
+
+# ** Checkout
+[alias]
+	co = checkout
+	cb = checkout -b
+	# checkout with create new branch and show current branch status to check the result
+	ct = "!git checkout --track $1 && git status -s --branch"
+
+# ** Branch
+[alias]
+	br = branch
+	bra = branch --all
+
+# ** Reset(undo work/stage/cache)
+[alias]
+	uw = checkout --
+	us = reset HEAD
+	uc = rm --cached
+
+# ** Diff, difftool
+[alias]
+	dw = diff --color-words
+	dw0 = diff --color-words -U0
+	ds = diff --staged --color-words
+	ds0 = diff --staged --color-words -U0
+	dh = diff HEAD --color-words
+	diff-word = diff --word-diff
+	# TIPS:
+	# git difftool|dt|dtp|dpm <hash_or_branch_name>[~Number]^!
+	dt = difftool
+	dtp = difftool --tool=p4merge
+	dtm = difftool --tool=meld
+	dt-w = difftool
+	dt-s = difftool --staged
+	dt-h = difftool HEAD
+	dt-w-p = difftool --tool=p4merge
+	dt-s-p = difftool --staged --tool=p4merge
+	dt-h-p = difftool HEAD --tool=p4merge
+	dt-w-m = difftool --tool=meld
+	dt-s-m = difftool --staged --tool=meld
+	dt-h-m = difftool HEAD --tool=meld
+	mt = mergetool
+	diffall = "!git difftool --dir-diff"
+
+# ** Log
+[alias]
+	last = log -1 HEAD --stat --date=format:'%Y-%m-%d %a %H:%M'
+	last-patch = log -1 HEAD --patch-with-stat --date=format:'%Y-%m-%d %a %H:%M'
+	lg = log --oneline
+	lo = log --oneline --decorate --graph
+	# Log oneline, Disable Graphic
+	lo-dg = log --oneline --decorate
+	# Log one line, Format subject(used only significant 70 chars of subject)
+	lo-f = log --pretty=format:'%C(yellow)%h%Creset%C(bold red)%d%Creset%<|(80,trunc) %s'
+	l = "!f() { git log --oneline --decorate --graph -n 10 $@; echo "..."; }; f"
+	L = "!f() { git log --all --oneline --decorate --graph -n 10 $@; echo "..."; }; f"
+	la = log --oneline --decorate --graph --all
+	lp = log --patch-with-stat --date=format:'%Y-%m-%d %a %H:%M'
+	ls = log --stat --date=format:'%Y-%m-%d %a %H:%M'
+	lon = log --oneline --decorate --graph --name-status
+	los = log --oneline --decorate --graph --stat
+	lan = log --oneline --decorate --graph --name-status --all
+	las = log --oneline --decorate --graph --stat --all
+	# Log with date(Time) and relative commiter date; commit subject and time formatted
+	lt     = log --decorate --graph --pretty=format:'%C(yellow)%h%Creset%C(bold red)%d%Creset%<|(70,trunc) %s %C(green)%<(12,trunc)|%cr|%Creset <%an>'
+	# Log with date(Time) and relative commiter date; Unformatted
+	ltu    = log --decorate --graph --pretty=format:'%C(yellow)%h%Creset%C(bold red)%d%Creset %s %C(green)|%cr|%Creset <%an>'
+	# 'lt' and 'ltu' aliases with Disable Graphic
+	lt-dg  = log --decorate --pretty=format:'%C(yellow)%h%Creset%C(bold red)%d%Creset%<|(70,trunc) %s %C(green)%<(12,trunc)|%cr|%Creset <%an>'
+	ltu-dg = log --decorate --pretty=format:'%C(yellow)%h%Creset%C(bold red)%d%Creset %s %C(green)|%cr|%Creset <%an>'
+	# Log with committer relative date(Time), and commit Body
+	ltb  = log --decorate --graph --pretty=format:'%C(yellow)%h%Creset%C(bold red)%d%Creset %s %C(green)|%cr|%Creset <%an> %n%b'
+	lb = ltb
+	# Log with ISO 8601-like committer date(Time) format
+	lti  = log --decorate --graph --pretty=format:'%C(yellow)%h%Creset%C(bold red)%d%Creset %s %C(green)|%ci|%Creset <%an>'
+	# Log with Short date(Time) format(YYYY-MM-DD)
+	lts  = log --decorate --graph --pretty=format:'%C(yellow)%h%Creset%C(bold red)%d%Creset %s %C(green)|%cs|%Creset <%an>'
+	lta = lt --all
+	sh = show --color-words --date=format:'%Y-%m-%d %a %H:%M'
+	shw = show --word-diff --date=format:'%Y-%m-%d %a %H:%M'
+	visual = !gitk&
+	today = "!git lo --since midnight --author=\"$(git config user.name)\" --all"
+	week = "!git lo --since=1.weeks --author=\"$(git config user.name)\" --all"
+
+# ** Search
+
+# *** Search git-repo file names
+	# https://github.com/fniessen/git-leuven
+	search-for-files = !git ls-tree -r --name-only HEAD | grep -i --color=auto
+	search-for-files-all = "!f() { \
+			for BRANCH in $(git for-each-ref --format=\"%(refname)\" refs/heads); do \
+				printf \"\n$(tput bold)$BRANCH:$(tput sgr0)\n\"; \
+				git ls-tree -r --name-only $BRANCH | nl -bn -w3 | grep --color=auto \"$1\"; \
+			done; \
+		}; f"
+
+# *** Search in git-repo files
+
+# **** Code
+	search-for-code = "grep -i -I --line-number --break --heading -C 1"
+
+# **** Personal-grep
+	# TIPS:
+	# -i  -- ignore case
+	# -I  -- Don't match the pattern in binary files.
+	# -C 1 -- context ([-A <post-context>] [-B <pre-context>])
+	# --all-match
+	# -f  -- file
+	# -c  -- count
+	# -l  --files-with-matches
+    # -L  --files-without-match]
+	# -e REGEXRP; may used with: --and --or --not
+	# '--' -- Signals the end of options; the rest of the parameters are <pathspec> limiters.
+	#      Examples:
+	#          -- '*.[ch]';
+	#          -- :^Documentation
+	#
+	# See 'git grep --help' for more help
+	gr = grep -I --break --line-number --heading
+
+# *** Search in git-log messages ("--grep")
+	search-for-commits = "log --decorate -i --all --date=short --grep"
+	search-for-commits-all-branches = "log -a --decorate -i --all --date=short --grep"
+
+# *** Search in git-log patches "-S,-G"
+	# TIPS:
+	# -p  -- show a patch
+	# --stat -- generate a diffstat
+	# --name-status
+	# --compact-summary
+	# See 'git log --help' for more help
+	search-for-patch = "log --oneline -G"
+	# Look for differences that change the number of occurrences of the specified string
+	search-for-patch-change = "log --oneline -S"
+
+# ** Tag
+[alias]
+	# TIPS:
+	# Search by tags:
+	#  $ git tag|<tag-alieas> -l "*mask*"
+	tl-name         = tag
+	tl-name-version = tag --sort=-version:refname
+	tl-name-date    = tag --sort=-creatordate
+
+	tl-subject         = tag -n1
+	tl-subject-version = tag -n1 --sort=-version:refname
+	tl-subject-date    = tag -n1 --sort=-creatordate
+
+	tl-body         = tag -n10
+	tl-body-version = tag -n10 --sort=-version:refname
+	tl-body-date    = tag -n10 --sort=-creatordate
+
+# ** Fetch
+[alias]
+	# 'fr' - Fetch Rebase('Pull Rebase' name is used in 'git-extars' tools: see at 'git-pr')
+	fr = pull --rebase
+
+# ** Submodules
+# *** Info
+[alias]
+	sm-status = !"git submodule status --recursive | sed 's/\\([^abcdef0-9]\\{,2\\}\\)\\([abcdef0-9]\\{7\\}\\)\\([abcdef0-9]\\{33\\}\\)\\(.*\\)/\\1\\2\\4/'"
+	sm-state = submodule foreach --recursive 'git status --short'
+	sm-diff = submodule foreach --recursive 'git diff'
+	sm-remote = submodule foreach --recursive 'git remote -v'
+	sm-summary = submodule summary --summary-limit 3
+	sm-sf="!git sm-status && echo && git sm-summary && git sm-state"
+
+# *** Management
+[alias]
+	sm-init = submodule init
+	sm-init-update = !"git submodule init && git submodule update --init --recursive && git sm-state"
+	sm-update = submodule update --recursive
+	sm-update-force = submodule update --recursive --force
+	sm-update-remote = submodule update --recursive --remote --merge
+
+# ** Files, tree
+[alias]
+	ls-files = ls-files # 'ls-files' - does not exist in the git-completion.bash
+	lsf = ls-files
+	ls-tree = ls-tree   # 'ls-files' - does not exist in the git-completion.bash
+	lst = ls-tree --abbrev=7 -r
+	# TIPS:
+	# usage example for 'git lst': git lst -r <branch> | grep <search_patert>
+
+# ** Help
+[help]
+	format = web
+
+# ** Mix
+[alias]
+	# remove-reflogs = !"git reflog expire --all --expire=now; git gc --prune=now --aggressive"
+	alias = "!git config -l | grep alias | cut -c 7-"
+	config-list-local = config --local --list
+	config-list-global = "!git config -l | grep -v alias"
+	config-list-global-all = config --global --list
+	zip = archive --format=zip -o git-backup-current-dir.zip HEAD
+	# NOTE: git-branch-status - print pretty git branch sync status reports
+	#       https://github.com/bill-auger/git-branch-status
+	bs = branch-status
+
+# * Coding
+[i18n]
+	filesencoding = utf-8
+	logoutputencoding = utf-8
+
+# * Color
+[color]
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+	ui = auto
+
+[color "decorate"]
+	tag = magenta
+
+# * Tools
+[merge]
+	tool = kdiff3
+
+[diff]
+	tool = kdiff3
+	guitool = kdiff3
+	submodule = log
+
+# ** Diff tools
+[diff "exif"]
+	textconv = exiftool
+
+[diff "word"]
+	textconv = docx2txt
+
+# * Git-plus
+# https://github.com/tkrajina/git-plus
+[multi]
+	groupbyoutput = 1
+
+# * Git-extras
+[git-extras "info"]
+	# show user's name and email
+	config-grep = git config --list | grep --color=never -E \"^user.name|^user.email\"
+	# show last commit subject, without sha1
+	log = git log --max-count=1 --format=\"Author: %an%nDate:   %ad (%cr)%n%n    %s\" --date=format:\"%Y-%m-%d %a %H:%M\"
+
+# ** Alias
+[alias]
+	# Info Short
+	is = info -c --no-config
+
+# * Include
+[include]
+	path = ~/.gitconfig_extra
+	path = ~/.gitconfig_path
